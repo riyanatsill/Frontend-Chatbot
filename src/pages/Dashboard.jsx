@@ -16,22 +16,6 @@ const Dashboard = () => {
 
   const [dataLine, setDataLine] = useState([]);
   const [dataPie, setDataPie] = useState([]);
-  const [userRole, setUserRole] = useState("");
-
-  useEffect(() => {
-  // Ambil role user dari backend session
-  fetch("http://localhost:5000/me", { credentials: "include" })
-    .then((res) => {
-      if (!res.ok) throw new Error();
-      return res.json();
-    })
-    .then((data) => {
-      setUserRole(data.role || "");
-    })
-    .catch(() => {
-      navigate("/login");
-    });
-  } , []);
 
   useEffect(() => {
     // 🔄 Fetch data dari API backend Flask kamu
@@ -54,9 +38,6 @@ const Dashboard = () => {
       break;
     case "faq":
       navigate("/faq-final");
-      break;
-    case "admin":
-      navigate("/manage-admin");
       break;
     case "history":
       navigate("/history");
@@ -84,7 +65,7 @@ const Dashboard = () => {
       />
 
       {/* Quick Action */}
-      <QuickActions onAction={handleQuickAction} userRole={userRole} />
+      <QuickActions onAction={handleQuickAction} />
       
       {/* Grafik Aktivitas */}
       <div className="my-5">

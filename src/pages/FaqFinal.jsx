@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
 import NavbarFaq from '../components/NavbarFaq';
 import Footer from '../components/Footer';
+import { useNavigate } from "react-router-dom";
 
 const API_BASE = 'http://localhost:5000';
 
@@ -19,6 +20,7 @@ const FAQFinal = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [faqToDelete, setFaqToDelete] = useState(null);
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
+  const navigate = useNavigate();
 
 
   const fetchFaqs = async () => {
@@ -31,6 +33,21 @@ const FAQFinal = () => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetch("http://localhost:5000/me", { credentials: "include" })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(() => {
+        // Sudah login, tidak perlu lakukan apa-apa
+      })
+      .catch(() => {
+        // Belum login, redirect ke halaman login
+        navigate("/login");
+      });
+  }, []);
 
   useEffect(() => {
     fetchFaqs();

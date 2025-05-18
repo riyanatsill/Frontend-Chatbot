@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/react.svg"; // Ubah sesuai lokasi logo kamu
+import logo from "../assets/smart-pnj.png"; // Ubah sesuai lokasi logo kamu
 
 const NavbarKnowledge = () => {
 
