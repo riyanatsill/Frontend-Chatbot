@@ -8,9 +8,10 @@ const MyAccount = () => {
   const [newPassword, setNewPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState({ show: false, type: "", message: "" });
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch("http://localhost:5000/me", { credentials: "include" })
+    fetch(API_BASE, { credentials: "include" })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();

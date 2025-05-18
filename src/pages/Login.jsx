@@ -9,12 +9,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   // Dummy login role check
   const handleLogin = (e) => {
   e.preventDefault();
 
-    fetch("http://localhost:5000/login", {
+    fetch(API_BASE, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

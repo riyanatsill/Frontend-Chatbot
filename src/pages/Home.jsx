@@ -7,9 +7,10 @@ import logo2 from "../assets/logo.png"; // Ubah sesuai lokasi logo kamu
 
 const MainUser = () => {
   const [faqs, setFaqs] = useState([]);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch("http://localhost:5000/faq")
+    fetch(API_BASE)
       .then((res) => res.json())
       .then((data) => setFaqs(data))
       .catch((err) => console.error("Gagal ambil FAQ:", err));

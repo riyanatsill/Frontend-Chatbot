@@ -16,10 +16,11 @@ const Dashboard = () => {
 
   const [dataLine, setDataLine] = useState([]);
   const [dataPie, setDataPie] = useState([]);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // 🔄 Fetch data dari API backend Flask kamu
-    fetch("http://localhost:5000/dashboard-stats")
+    fetch(API_BASE)
       .then((res) => res.json())
       .then((data) => {
         setTotalQuestions(data.total_questions_today || 0);

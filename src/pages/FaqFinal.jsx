@@ -5,7 +5,7 @@ import NavbarFaq from '../components/NavbarFaq';
 import Footer from '../components/Footer';
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const FAQFinal = () => {
   const [faqs, setFaqs] = useState([]);
