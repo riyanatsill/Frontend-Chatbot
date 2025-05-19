@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/react.svg"; // Ubah sesuai lokasi logo kamu
+import logo from "../assets/smart-pnj.png"; // Ubah sesuai lokasi logo kamu
 
 const NavbarAdmin = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   // Ambil user dari session backend
   useEffect(() => {
-    fetch("http://localhost:5000/me", { credentials: "include" })
+    fetch(`${API_BASE}/me`, { credentials: "include" })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -19,7 +20,7 @@ const NavbarAdmin = () => {
   }, []);
 
   const handleLogout = () => {
-    fetch("http://localhost:5000/logout", {
+    fetch(`${API_BASE}/logout`, {
       method: "GET",
       credentials: "include",
     })

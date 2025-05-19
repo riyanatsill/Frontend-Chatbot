@@ -15,7 +15,7 @@ const Login = () => {
   const handleLogin = (e) => {
   e.preventDefault();
 
-    fetch(API_BASE, {
+  fetch(`${API_BASE}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -26,20 +26,18 @@ const Login = () => {
     .then(async (res) => {
       const data = await res.json();
       if (!res.ok) {
-        // lempar error dengan isi pesan dari server
         throw new Error(data.error || "Login gagal");
       }
       return data;
     })
-    .then((data) => {
-      if (data.role === "superadmin" || data.role === "admin") {
-        navigate("/dashboard");
-      }
+    .then(() => {
+      navigate("/dashboard"); // ✅ langsung redirect tanpa cek role
     })
     .catch((err) => {
-      setError(err.message);  // ✅ tampilkan pesan error dari server
+      setError(err.message);
     });
 };
+
 
 
   return (

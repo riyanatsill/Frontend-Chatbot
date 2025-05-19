@@ -14,6 +14,7 @@ import BaseKnowledge from './pages/BaseKnowledge';
 import Dashboard from './pages/Dashboard.jsx';
 import MyAccount from './pages/MyAccount.jsx';
 import MainUser from './pages/Home.jsx';  
+import ManageAdmin from './pages/ManageAdmin.jsx';
 
 
 
@@ -23,14 +24,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/home" element={<MainUser />} />
+        <Route path="/" element={<MainUser />} />
         <Route path="/chatbot" element={<Chatbot />} />
-        <Route path="/admin" element={<AdminUpload />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/faq-suggestion" element={<FaqSuggestion />} />
         <Route path="/faq-final" element={<FaqFinal />} />
         <Route path="/history" element={<QuestionHistory />} />
+        <Route path="/manage-admin" element={<ManageAdmin />} />
         <Route path="/base-knowledge" element={<BaseKnowledge />} />
         <Route path="/my-account" element={<MyAccount />} />
       </Routes>

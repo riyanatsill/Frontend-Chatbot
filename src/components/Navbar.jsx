@@ -14,12 +14,12 @@ const Navbar = () => {
                 alt="Logo"
                 style={{ width: "32px", height: "32px", borderRadius: "50%" }}
               />
-              <a href="/home" className="text-decoration-none text-dark">Smart PNJ</a>
+              <a href="/" className="text-decoration-none text-dark">Smart PNJ</a>
             </div>
   
             {/* Kanan: Link + Username + Logout */}
             <div className="d-flex align-items-center gap-4">
-              <a href="/home" className="nav-link text-black">Home</a>
+              <a href="/" className="nav-link text-black">Home</a>
             </div>
           </div>
         </nav>

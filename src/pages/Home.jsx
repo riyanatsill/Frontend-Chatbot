@@ -1,5 +1,5 @@
 import NavbarUser from "../components/NavbarUser";
-import Footer from "../components/Footer";
+import Footer2 from "../components/Footer2";
 import { useEffect, useState } from "react";
 import logo from "../assets/smart-pnj.png"; // Ubah sesuai lokasi logo kamu
 import logo2 from "../assets/logo.png"; // Ubah sesuai lokasi logo kamu
@@ -10,7 +10,7 @@ const MainUser = () => {
   const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(API_BASE)
+    fetch(`${API_BASE}/faq`)
       .then((res) => res.json())
       .then((data) => setFaqs(data))
       .catch((err) => console.error("Gagal ambil FAQ:", err));
@@ -27,7 +27,7 @@ const MainUser = () => {
                 {/* Kiri: Text */}
                 <div className="col-md-6 text-center text-md-start mb-4 mb-md-0">
                     <h2 className="fw-bold">Selamat Datang di Smart PNJ!</h2>
-                    <p className="mt-2">Siap melayani pertanyaan seputar Penerimaan Mahasiswa Baru.</p>
+                    <p className="mt-2">Siap melayani pertanyaan seputar Penerimaan Mahasiswa Baru di <br/><strong>Politeknik Negeri Jakarta</strong></p>
                     <a href="/chatbot" className="btn btn-light mt-3 px-4">Mulai Percakapan</a>
                 </div>
 
@@ -48,13 +48,18 @@ const MainUser = () => {
                 <div className="row align-items-center">
                 {/* Kiri: Logo */}
                 <div className="col-md-4 text-center mb-4 mb-md-0">
-                    <img src={logo} alt="Smart PNJ Logo" style={{ width: '300px' }} />
+                    <img
+                    src={logo2}
+                    alt="Smart PNJ Logo"
+                    className="img-fluid"
+                    style={{ maxWidth: '250px' }}
+                    />
                 </div>
 
                 {/* Kanan: Teks */}
-                <div className="col-md-8">
+                <div className="col-md-8 mb-4 mb-md-0 text-center text-md-start">
                     <p>
-                    <strong className="text-primary">SmartPNJ</strong> adalah platform yang dikembangkan untuk membantu calon mahasiswa Politeknik Negeri Jakarta dalam mengakses informasi Penerimaan Mahasiswa Baru (PMB).
+                    <strong style={{ color: '#0F8390' }}>SmartPNJ</strong> adalah platform yang dikembangkan untuk membantu calon mahasiswa Politeknik Negeri Jakarta dalam mengakses informasi Penerimaan Mahasiswa Baru (PMB).
                     </p>
                     <p>
                     Chatbot ini dirancang agar responsif, informatif, dan mudah digunakan, sehingga pengguna dapat memperoleh jawaban cepat mengenai jalur masuk, jadwal pendaftaran, program studi, hingga pertanyaan umum seputar PMB.
@@ -63,6 +68,7 @@ const MainUser = () => {
                 </div>
             </div>
         </section>
+
 
         {/* FAQ */}
         <section id="faq" className="bg-superdash text-white" style={{ paddingBottom: '300px', paddingTop: '100px' }}>
@@ -105,7 +111,7 @@ const MainUser = () => {
         </section>
 
 
-      <Footer />
+      <Footer2 />
     </div>
   );
 };

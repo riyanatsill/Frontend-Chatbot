@@ -3,16 +3,15 @@ import axios from 'axios';
 import NavbarKnowledge from '../components/NavbarKnowledge';
 import Footer from '../components/Footer';
 
-const API_BASE = import.meta.env.VITE_API_URL;
-
 const BaseKnowledge = () => {
   const [files, setFiles] = useState([]);
   const [uploadFile, setUploadFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState({ username: "", role: "" });
+  const [user, setUser] = useState({ username: "" });
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   const fetchFiles = async () => {
     try {
@@ -34,7 +33,7 @@ const BaseKnowledge = () => {
         return res.json();
       })
       .then((data) => {
-        setUser({ username: data.username, role: data.role });
+        setUser({ username: data.username });
       })
       .catch(() => {
         window.location.href = "/login";
@@ -96,43 +95,49 @@ const BaseKnowledge = () => {
         <p className="mb-0">Upload dokumen QA per kategori (misal: Biaya 2024, Jadwal 2025, dll)</p>
       </section>
 
-      <div className="container py-5">
-        <form onSubmit={handleUpload} className="mb-4 d-flex gap-2 align-items-center">
-          <input
-            type="file"
-            onChange={(e) => setUploadFile(e.target.files[0])}
-            className="form-control w-50"
-          />
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Mengunggah...' : 'Upload File'}
-          </button>
+      <div className="container-xl py-5" style={{ maxWidth: "800px" }}>
+        <form onSubmit={handleUpload} className="mb-4">
+          <div className="row g-2 align-items-center">
+            <div className="col-12 col-md-8">
+              <input
+                type="file"
+                onChange={(e) => setUploadFile(e.target.files[0])}
+                className="form-control"
+              />
+            </div>
+            <div className="col-12 col-md-4">
+              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                {loading ? 'Mengunggah...' : 'Upload File'}
+              </button>
+            </div>
+          </div>
         </form>
 
         {files.length === 0 ? (
           <p className="text-muted">Belum ada file diupload.</p>
         ) : (
-          <table className="table table-bordered">
-            <thead className="table-light">
-              <tr>
-                <th>No</th>
-                <th>Nama File</th>
-                <th>Diunggah Oleh</th>
-                <th>Waktu</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {files.map((file, idx) => (
-                <tr key={file.filename}>
-                  <td>{idx + 1}</td>
-                  <td>
-                    {file.filename}
-                    <div><small className="text-muted">QA otomatis terindeks</small></div>
-                  </td>
-                  <td>{file.uploaded_by || "-"}</td>
-                  <td>{new Date(file.uploaded_at).toLocaleString()}</td>
-                  <td>
-                    {user.role === "admin" && (
+          <div className="table-responsive">
+            <table className="table table-bordered align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>No</th>
+                  <th>Nama File</th>
+                  <th>Diunggah Oleh</th>
+                  <th>Waktu</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {files.map((file, idx) => (
+                  <tr key={file.filename}>
+                    <td>{idx + 1}</td>
+                    <td>
+                      {file.filename}
+                      <div><small className="text-muted">QA otomatis terindeks</small></div>
+                    </td>
+                    <td>{file.uploaded_by || "-"}</td>
+                    <td>{new Date(file.uploaded_at).toLocaleString()}</td>
+                    <td>
                       <button
                         className="btn btn-danger btn-sm"
                         onClick={() => {
@@ -142,12 +147,12 @@ const BaseKnowledge = () => {
                       >
                         Hapus
                       </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

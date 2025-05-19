@@ -10,6 +10,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -27,7 +28,7 @@ const Chat = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/ask', {
+      const response = await axios.post(`${API_BASE}/ask`, {
         question: question,
       });
 
@@ -36,7 +37,7 @@ const Chat = () => {
       setMessages((prev) => [...prev, botMessage]);
 
       try {
-        await axios.post('http://localhost:5000/submit-question', {
+        await axios.post(`${API_BASE}/submit-question`, {
           question: question,
           answer: botAnswer,
         });

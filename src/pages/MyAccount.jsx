@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './Login.css';
 import NavbarAccount from "../components/NavbarAccount";
-import Footer from "../components/Footer";
+import Footer2 from "../components/Footer2";
 
 const MyAccount = () => {
   const [user, setUser] = useState({ username: "", email: "" });
@@ -11,7 +11,7 @@ const MyAccount = () => {
   const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(API_BASE, { credentials: "include" })
+    fetch(`${API_BASE}/me`, { credentials: "include" })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -35,7 +35,7 @@ const MyAccount = () => {
       return;
     }
 
-    fetch("http://localhost:5000/users/reset-password", {
+    fetch(`${API_BASE}/users/reset-password`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -119,7 +119,7 @@ const MyAccount = () => {
             </div>
         )}
         </div>
-        <Footer />
+        <Footer2 />
     </div>
   );
 };

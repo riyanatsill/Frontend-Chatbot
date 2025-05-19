@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, Button, Form } from 'react-bootstrap';
 import NavbarFaq from '../components/NavbarFaq';
 import Footer from '../components/Footer';
 import { useNavigate } from "react-router-dom";
@@ -33,7 +32,7 @@ const FAQSuggestion = () => {
   };
 
   useEffect(() => {
-      fetch("http://localhost:5000/me", { credentials: "include" })
+      fetch(`${API_BASE}/me`, { credentials: "include" })
         .then((res) => {
           if (!res.ok) throw new Error();
           return res.json();
@@ -113,53 +112,62 @@ const confirmGenerateSuggestions = async () => {
       <NavbarFaq />
       <section className="bg-superdash text-white text-center py-5">
         <h2 className="fw-bold mb-2">FAQ Suggestion</h2>
-        <p className="mb-0">lorem ipsum</p>
       </section>
       <div className="container py-5">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="mb-0">Saran FAQ (otomatis)</h5>
-          <button className="btn btn-outline-secondary" onClick={handleGenerateSuggestions}>
-            🔁 Generate FAQ Suggestion
-          </button>
+        <div className="d-flex justify-content-end mb-4">
+          <div className="col-12 col-md-auto">
+            <button
+              className="btn btn-success w-100"
+              onClick={handleGenerateSuggestions} 
+            >
+              Generate FAQ Suggestion
+            </button>
+          </div>
         </div>
+
 
         {loading ? (
           <p>Memuat data...</p>
         ) : suggestions.length === 0 ? (
           <p className="text-muted">Belum ada saran FAQ.</p>
         ) : (
-          <table className="table table-bordered">
-            <thead className="table-light">
-              <tr>
-                <th>Pertanyaan Utama</th>
-                <th>Kategori</th> {/* Ditambahkan */}
-                <th>Variasi Pertanyaan</th>
-                <th>Jawaban</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {suggestions.map((faq) => (
-                <tr key={faq.id}>
-                  <td>{faq.main_question}</td>
-                  <td>{faq.category || 'Umum'}</td> {/* Ditambahkan */}
-                  <td>
-                    <ul className="mb-0 ps-3">
-                      {faq.variations.map((v, i) => (
-                        <li key={i}>{v}</li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td>{faq.answer || <span className="text-muted">Belum dijawab</span>}</td>
-                  <td>
-                    <button className="btn btn-success btn-sm" onClick={() => handleOpenModal(faq)}>
-                      Jadikan FAQ
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-light">
+                  <tr>
+                    <th>Pertanyaan Utama</th>
+                    <th>Kategori</th>
+                    <th>Variasi Pertanyaan</th>
+                    <th>Jawaban</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {suggestions.map((faq) => (
+                    <tr key={faq.id}>
+                      <td>{faq.main_question}</td>
+                      <td>{faq.category || 'Umum'}</td>
+                      <td>
+                        <ul className="mb-0 ps-3">
+                          {faq.variations.map((v, i) => (
+                            <li key={i}>{v}</li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td>{faq.answer || <span className="text-muted">Belum dijawab</span>}</td>
+                      <td>
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleOpenModal(faq)}
+                        >
+                          Jadikan FAQ
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+          </div>
         )}
       </div>
       {showModal && (

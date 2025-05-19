@@ -35,7 +35,7 @@ const FAQFinal = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/me", { credentials: "include" })
+    fetch(`${API_BASE}/me`, { credentials: "include" })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -142,28 +142,27 @@ const executeDelete = async () => {
         <NavbarFaq />
         <section className="bg-superdash text-white text-center py-5">
         <h2 className="fw-bold mb-2">Frequently Ask Question</h2>
-        <p className="mb-0">lorem ipsum</p>
         </section>
 
-        <div className="container py-5 flex-grow-1">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
-            <button className="btn btn-primary" onClick={() => handleOpenModal()}>
-              + Tambah FAQ Manual
-            </button>
-            <div className="d-flex flex-column flex-md-row gap-2">
+        <div className="container py-5 flex-grow-1" style={{ maxWidth: "900px" }}>
+          <div className="row align-items-center justify-content-between g-3 mb-4">
+            <div className="col-12 col-md-auto">
+              <button className="btn btn-success w-100" onClick={() => handleOpenModal()}>
+                + Tambah FAQ Manual
+              </button>
+            </div>
+            <div className="col-12 col-md d-flex flex-column flex-md-row gap-2">
               <input
                 type="text"
                 className="form-control"
                 placeholder="Cari pertanyaan atau jawaban..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                style={{ width: "400px" }}
               />
               <select
                 className="form-select"
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                style={{ width: "250px" }}
               >
                 <option value="">Semua Kategori</option>
                 <option value="Jadwal">Jadwal</option>
@@ -173,7 +172,6 @@ const executeDelete = async () => {
                 <option value="Umum">Umum</option>
               </select>
             </div>
-
           </div>
 
           {loading ? (

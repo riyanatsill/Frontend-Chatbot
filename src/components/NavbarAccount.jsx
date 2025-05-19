@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/smart-pnj.pnj"; // Ubah sesuai lokasi logo kamu
+import logo from "../assets/smart-pnj.png"; // Ubah sesuai lokasi logo kamu
 
 const NavbarAccount = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   const handleLogout = () => {
-    fetch("http://localhost:5000/logout", {
+    fetch(`${API_BASE}/logout`, {
       method: "GET",
       credentials: "include",
     })

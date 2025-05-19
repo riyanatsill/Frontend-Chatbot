@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // 🔄 Fetch data dari API backend Flask kamu
-    fetch(API_BASE)
+    fetch(`${API_BASE}/dashboard-stats`)
       .then((res) => res.json())
       .then((data) => {
         setTotalQuestions(data.total_questions_today || 0);
@@ -43,6 +43,9 @@ const Dashboard = () => {
     case "history":
       navigate("/history");
       break;
+    case "admin":
+      navigate("/manage-admin");
+      break;
     default:
       break;
     }
@@ -54,7 +57,6 @@ const Dashboard = () => {
         {/* HEADER */}
       <section className="bg-superdash text-white text-center py-5">
         <h2 className="fw-bold mb-2">Welcome to Dashboard</h2>
-        <p className="mb-0">lorem ipsum</p>
       </section>
     <div className="container my-4 flex-grow-1">
 

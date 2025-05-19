@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Footer2 from '../components/Footer2';
 import Chat from '../components/Chat';
 import './Login.css';
 
@@ -11,7 +11,7 @@ const Chatbot = () => {
       <main className="flex-grow-1">
         <Chat />
       </main>
-      <Footer />
+      <Footer2 />
     </div>
   );
 };
