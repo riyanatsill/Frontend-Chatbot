@@ -16,7 +16,7 @@ const NavbarFaq = () => {
               alt="Logo"
               style={{ width: "32px", height: "32px", borderRadius: "50%" }}
             />
-            <span className="fw-bold">Chatbot Admin Dashboard</span>
+            <span className="fw-bold">Smart PNJ Dashboard</span>
           </div>
 
           {/* Kanan: Link + Username + Logout */}
@@ -25,10 +25,7 @@ const NavbarFaq = () => {
               Home
             </Link>
             <Link to="/faq-final" className="text-decoration-none text-dark">
-              FAQ Final
-            </Link>
-            <Link to="/faq-suggestion" className="text-decoration-none text-dark">
-              FAQ Suggestion
+              FAQ
             </Link>
             <Link to="/history" className="text-decoration-none text-dark">
               Chat History

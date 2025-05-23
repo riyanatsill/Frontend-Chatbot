@@ -6,7 +6,7 @@ const StatSummary = ({ totalQuestions, totalFiles, totalIndexedQA }) => {
       <div className="col">
         <div className="card shadow-sm text-center">
           <div className="card-body">
-            <h5 className="card-title">Pertanyaan Hari Ini</h5>
+            <h5 className="card-title">Total Pertanyaan Yang Masuk</h5>
             <p className="card-text fs-3">{totalQuestions}</p>
           </div>
         </div>

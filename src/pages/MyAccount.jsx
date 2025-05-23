@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import './Login.css';
 import NavbarAccount from "../components/NavbarAccount";
 import Footer2 from "../components/Footer2";
+import { useNavigate } from "react-router-dom";
 
 const MyAccount = () => {
   const [user, setUser] = useState({ username: "", email: "" });
@@ -9,6 +10,7 @@ const MyAccount = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState({ show: false, type: "", message: "" });
   const API_BASE = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${API_BASE}/me`, { credentials: "include" })
@@ -20,7 +22,7 @@ const MyAccount = () => {
         setUser({ username: data.username, email: data.email });
       })
       .catch(() => {
-        window.location.href = "/login";
+        navigate("/login");
       });
   }, []);
 
@@ -30,29 +32,42 @@ const MyAccount = () => {
   };
 
   const handlePasswordUpdate = () => {
-    if (!newPassword.trim()) {
-      showToast("danger", "Password baru tidak boleh kosong.");
-      return;
-    }
+  if (!newPassword.trim()) {
+    showToast("danger", "Password baru tidak boleh kosong.");
+    return;
+  }
 
-    fetch(`${API_BASE}/users/reset-password`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({ password: newPassword })
+  fetch(`${API_BASE}/users/reset-password`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    credentials: "include",
+    body: JSON.stringify({ password: newPassword })
+  })
+    .then((res) => {
+      if (!res.ok) throw
+      return res.json();
     })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(() => {
-        showToast("success", "Password berhasil diperbarui.");
-        setNewPassword("");
-      })
-      .catch(() => showToast("danger", "Gagal memperbarui password."));
-  };
+    .then(() => {
+      showToast("success", "Password berhasil diperbarui.");
+      setNewPassword("");
+
+      
+      setTimeout(() => {
+        fetch(`${API_BASE}/logout`, {
+          method: "GET",
+          credentials: "include"
+        }).finally(() => {
+          navigate("/login");
+        });
+      }, 1500);
+    })
+    .catch(() => {
+      showToast("danger", "Gagal memperbarui password.");
+    });
+};
+
 
   return (
     <div className="bg-superdash d-flex flex-column min-vh-100">

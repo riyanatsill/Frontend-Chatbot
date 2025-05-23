@@ -26,13 +26,19 @@ const ManageAdmin = () => {
   };
 
   useEffect(() => {
-    fetch(`${API_BASE}/me`, { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .catch(() => navigate("/login"));
-  }, []);
+      fetch(`${API_BASE}/me`, { credentials: "include" })
+        .then((res) => {
+          if (!res.ok) throw new Error();
+          return res.json();
+        })
+        .then(() => {
+          // Sudah login, tidak perlu lakukan apa-apa
+        })
+        .catch(() => {
+          // Belum login, redirect ke halaman login
+          navigate("/login");
+        });
+    }, []);
 
   useEffect(() => {
     fetch(`${API_BASE}/users`)
@@ -125,7 +131,7 @@ const ManageAdmin = () => {
       )}
 
       <section className="bg-superdash text-white text-center py-5">
-        <h2 className="fw-bold mb-2">Manage Chatbot Account</h2>
+        <h2 className="fw-bold mb-2">Manage Admin Account</h2>
         <p className="mb-0">Create or delete admin accounts</p>
       </section>
 

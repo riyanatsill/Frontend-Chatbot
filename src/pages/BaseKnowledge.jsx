@@ -92,7 +92,7 @@ const BaseKnowledge = () => {
       {/* HEADER */}
       <section className="bg-superdash text-white text-center py-5">
         <h2 className="fw-bold mb-2">Base Knowledge</h2>
-        <p className="mb-0">Upload dokumen QA per kategori (misal: Biaya 2024, Jadwal 2025, dll)</p>
+        <p className="mb-0">Upload dokumen QA per kategori (misal: Ujian Mandiri 2025, SNBT 2025, dll)</p>
       </section>
 
       <div className="container-xl py-5" style={{ maxWidth: "800px" }}>
@@ -100,7 +100,8 @@ const BaseKnowledge = () => {
           <div className="row g-2 align-items-center">
             <div className="col-12 col-md-8">
               <input
-                type="file"
+                type='file'
+                accept=".pdf, .docx, .xlsx, .json, .txt"
                 onChange={(e) => setUploadFile(e.target.files[0])}
                 className="form-control"
               />
@@ -112,6 +113,12 @@ const BaseKnowledge = () => {
             </div>
           </div>
         </form>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">Daftar File Terunggah</h5>
+          <a href="/qa-data" className="btn btn-outline-primary">
+            Lihat QA Terindeks
+          </a>
+        </div>
 
         {files.length === 0 ? (
           <p className="text-muted">Belum ada file diupload.</p>

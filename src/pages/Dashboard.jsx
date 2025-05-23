@@ -38,7 +38,7 @@ const Dashboard = () => {
       navigate("/base-knowledge");
       break;
     case "faq":
-      navigate("/faq-final");
+      navigate("/faq");
       break;
     case "history":
       navigate("/history");

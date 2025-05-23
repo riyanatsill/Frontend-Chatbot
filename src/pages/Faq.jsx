@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Modal, Button, Form } from 'react-bootstrap';
 import NavbarFaq from '../components/NavbarFaq';
 import Footer from '../components/Footer';
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
-const FAQFinal = () => {
+const FAQ = () => {
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -165,10 +164,14 @@ const executeDelete = async () => {
                 onChange={(e) => setFilterCategory(e.target.value)}
               >
                 <option value="">Semua Kategori</option>
-                <option value="Jadwal">Jadwal</option>
-                <option value="Biaya">Biaya</option>
-                <option value="Syarat">Syarat</option>
-                <option value="Jalur">Jalur</option>
+                <option value="SNBT">SNBT</option>
+                <option value="SNBP">SNBP</option>
+                <option value="Ujian Mandiri">Ujian Mandiri</option>
+                <option value="Mandiri Prestasi">Mandiri Prestasi</option>
+                <option value="RPL">RPL</option>
+                <option value="PSDKU">PSDKU</option>
+                <option value="Pascasarjana">Pascasarjana</option>
+                <option value="WNBK">WNBK</option>
                 <option value="Umum">Umum</option>
               </select>
             </div>
@@ -265,10 +268,14 @@ const executeDelete = async () => {
                           className="form-select"
                         >
                           <option value="">Pilih kategori</option>
-                          <option value="Jadwal">Jadwal</option>
-                          <option value="Biaya">Biaya</option>
-                          <option value="Syarat">Syarat</option>
-                          <option value="Jalur">Jalur</option>
+                          <option value="SNBT">SNBT</option>
+                          <option value="SNBP">SNBP</option>
+                          <option value="Ujian Mandiri">Ujian Mandiri</option>
+                          <option value="Mandiri Prestasi">Mandiri Prestasi</option>
+                          <option value="RPL">RPL</option>
+                          <option value="PSDKU">PSDKU</option>
+                          <option value="Pascasarjana">Pascasarjana</option>
+                          <option value="WNBK">WNBK</option>
                           <option value="Umum">Umum</option>
                         </select>
                       </div>
@@ -346,4 +353,4 @@ const executeDelete = async () => {
   );
 };
 
-export default FAQFinal;
+export default FAQ;
