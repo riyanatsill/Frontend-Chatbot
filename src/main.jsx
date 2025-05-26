@@ -15,7 +15,7 @@ import MyAccount from './pages/MyAccount.jsx';
 import MainUser from './pages/Home.jsx';  
 import ManageAdmin from './pages/ManageAdmin.jsx';
 import QaData from './pages/QAData.jsx';
-
+import ResetPassword from './pages/ResetPassword.jsx';
 
 
 
@@ -34,6 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/base-knowledge" element={<BaseKnowledge />} />
         <Route path="/qa-data" element={<QaData />} />
         <Route path="/my-account" element={<MyAccount />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

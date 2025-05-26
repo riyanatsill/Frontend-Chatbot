@@ -1,91 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const API_BASE = import.meta.env.VITE_API_URL;
 
-  useEffect(() => {
-    // Ambil email dari localStorage / context / API user info
-    const userEmail = localStorage.getItem('email'); // kamu bisa sesuaikan key-nya
-    setEmail(userEmail || 'admin@example.com'); // fallback demo
-  }, []);
+  const query = new URLSearchParams(location.search);
+  const token = query.get('token');
 
-  const handleReset = () => {
-    if (!password || !confirmPassword) {
-      setMessage('Mohon isi semua kolom.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setMessage('Password dan konfirmasi tidak cocok.');
-      return;
-    }
+  const handleReset = (e) => {
+    e.preventDefault();
+    setMessage('');
+    setError('');
+    setLoading(true);
 
-    // Simulasi reset password
-    setMessage(`✅ Password untuk "${email}" berhasil direset!`);
-    setPassword('');
-    setConfirmPassword('');
+    fetch(`${API_BASE}/users/reset-password-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, password })
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Gagal reset password');
+        setMessage(data.message);
+        setPassword('');
+        setTimeout(() => navigate('/login'), 3000);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100 bg-superdash">
-      {/* Header */}
-      <header className="bg-white py-3 px-4 border-bottom">
-        <h4 className="m-0 fw-bold">Chatbot Admin Dashboard</h4>
-      </header>
+    <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center bg-superdash text-white px-3">
+      <h1 className="fw-bold mb-4">Reset Password</h1>
+      <form onSubmit={handleReset} className="w-100" style={{ maxWidth: '400px' }}>
+        {error && <div className="alert alert-danger text-center">{error}</div>}
+        {message && <div className="alert alert-success text-center">{message}</div>}
 
-      {/* Main Content */}
-      <main className="flex-grow-1 d-flex justify-content-center align-items-center">
-        <div className="w-100" style={{ maxWidth: '400px' }}>
-          {message && <div className="alert alert-light text-center">{message}</div>}
-
-          <div className="mb-3">
-            <label className="form-label text-white">Email</label>
+        <div className="mb-3">
+          <label className="form-label text-white">Password Baru</label>
+          <div className="input-group bg-light rounded">
             <input
-              type="email"
-              className="form-control"
-              value={email}
-              readOnly
-              disabled
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label text-white">New Password</label>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Enter new password"
+              type={showPassword ? "text" : "password"}
+              className="form-control px-3 py-2"
+              placeholder="Masukkan password baru"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
-          </div>
-
-          <div className="mb-4">
-            <label className="form-label text-white">Confirm Password</label>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Confirm new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-
-          <div className="d-grid">
-            <button className="btn btn-outline-light" onClick={handleReset}>
-              Reset Password
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={() => setShowPassword(!showPassword)}
+              tabIndex={-1}
+            >
+              {showPassword ? <i className="bi bi-eye-slash" /> : <i className="bi bi-eye" />}
             </button>
           </div>
         </div>
-      </main>
 
-      <footer className="text-center py-3 text-white-50 border-top mt-auto">
-        © 2025 Chatbot Admin &nbsp; | &nbsp;
-        <a href="#" className="text-white-50 text-decoration-none">Privacy Policy</a> &nbsp; | &nbsp;
-        <a href="#" className="text-white-50 text-decoration-none">Terms & Conditions</a>
-      </footer>
+        <div className="d-grid">
+          <button type="submit" className="btn btn-light fw-semibold" disabled={loading}>
+            {loading ? "Memproses..." : "Reset Password"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

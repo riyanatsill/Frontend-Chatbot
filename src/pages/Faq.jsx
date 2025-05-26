@@ -98,6 +98,21 @@ const FAQ = () => {
       showToast("danger", "Semua field harus diisi.");
       return;
     }
+    const maxWordCount = 200; // Batas maksimal 200 kata
+    const maxCharCount = 1000; // Batas maksimal 1000 karakter
+
+    const wordCount = answer.trim().split(/\s+/).length;
+    const charCount = answer.trim().length;
+
+    if (wordCount > maxWordCount) {
+      showToast("danger", `Jawaban terlalu panjang. Maksimal ${maxWordCount} kata.`);
+      return;
+    }
+
+    if (charCount > maxCharCount) {
+      showToast("danger", `Jawaban terlalu panjang. Maksimal ${maxCharCount} karakter.`);
+      return;
+    }
 
     setSubmitting(true);
 
@@ -185,6 +200,7 @@ const FAQ = () => {
                 <option value="RPL">RPL</option>
                 <option value="PSDKU">PSDKU</option>
                 <option value="Pascasarjana">Pascasarjana</option>
+                <option value="Kerjasama">Kerjasama</option>
                 <option value="WNBK">WNBK</option>
                 <option value="Umum">Umum</option>
               </select>
@@ -272,6 +288,9 @@ const FAQ = () => {
                           onChange={handleChange}
                           className="form-control"
                         ></textarea>
+                        <small className="text-muted">
+                          Maksimal 200 kata atau 1000 karakter.
+                        </small>
                       </div>
                       <div className="mb-3">
                         <label className="form-label">Kategori</label>

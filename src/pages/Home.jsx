@@ -6,6 +6,7 @@ import logo2 from "../assets/logo.png"; // Ubah sesuai lokasi logo kamu
 
 const MainUser = () => {
   const [faqs, setFaqs] = useState([]);
+  const [filterCategory, setFilterCategory] = useState('');
   const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -71,45 +72,75 @@ const MainUser = () => {
 
         {/* FAQ */}
         <section id="faq" className="bg-superdash text-white" style={{ paddingBottom: '300px', paddingTop: '100px' }}>
-            <div className="container">
-                <h3 className="text-center mb-3">Frequently Ask Question</h3>
-                <p className="text-center mb-5">Temukan jawaban atas pertanyaan paling umum tentang penerimaan mahasiswa baru.</p>
-                {faqs.length === 0 ? (
-                <p className="text-center text-muted">Belum ada FAQ yang tersedia.</p>
-                ) : (
-                <div className="accordion" id="faqAccordion" style={{ marginTop: '150px' }}>
-                    {faqs.slice(0, 5).map((faq, index) => (
+        <div className="container">
+            <h3 className="text-center mb-3">Frequently Ask Question</h3>
+            <p className="text-center mb-5">Temukan jawaban atas pertanyaan paling umum tentang penerimaan mahasiswa baru.</p>
+
+            {/* Dropdown Filter */}
+            <div className="row justify-content-center mb-4">
+            <div className="col-md-3">
+                <select
+                className="form-select"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                <option value="">Semua Kategori</option>
+                <option value="SNBP">SNBP</option>
+                <option value="SNBT">SNBT</option>
+                <option value="Ujian Mandiri">Ujian Mandiri</option>
+                <option value="Mandiri Prestasi">Mandiri Prestasi</option>
+                <option value="PSDKU">PSDKU</option>
+                <option value="Pascasarjana">Pascasarjana</option>
+                <option value="Kerjasama">Kerjasama</option>
+                <option value="RPL">RPL</option>
+                <option value="WNBK">WNBK</option>
+                <option value="Umum">Umum</option>
+                </select>
+            </div>
+            </div>
+
+            {/* Accordion FAQ */}
+            {faqs.length === 0 ? (
+            <p className="text-center text-muted">Belum ada FAQ yang tersedia.</p>
+            ) : (
+            <div className="accordion" id="faqAccordion" style={{ marginTop: '50px' }}>
+                {faqs
+                .filter((faq) => !filterCategory || faq.category === filterCategory)
+                .slice(0, 5)
+                .map((faq, index) => (
                     <div className="accordion-item" key={faq.id}>
-                        <h2 className="accordion-header" id={`heading${faq.id}`}>
+                    <h2 className="accordion-header" id={`heading${faq.id}`}>
                         <button
-                            className="accordion-button collapsed"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#collapse${faq.id}`}
-                            aria-expanded="false"
-                            aria-controls={`collapse${faq.id}`}
+                        className="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target={`#collapse${faq.id}`}
+                        aria-expanded="false"
+                        aria-controls={`collapse${faq.id}`}
                         >
-                            {index + 1}. {faq.question}
+                        {index + 1}. {faq.question}
                         </button>
-                        </h2>
-                        <div
+                    </h2>
+                    <div
                         id={`collapse${faq.id}`}
                         className="accordion-collapse collapse"
                         aria-labelledby={`heading${faq.id}`}
                         data-bs-parent="#faqAccordion"
-                        >
+                    >
                         <div className="accordion-body">
-                            {faq.answer}
-                        </div>
+                        {faq.answer}
                         </div>
                     </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
+
+                {faqs.filter((faq) => !filterCategory || faq.category === filterCategory).length === 0 && (
+                <p className="text-center text-muted">Tidak ada FAQ dalam kategori ini.</p>
                 )}
             </div>
+            )}
+        </div>
         </section>
-
-
       <Footer2 />
     </div>
   );
