@@ -17,7 +17,7 @@ const NavbarUser = () => {
               alt="Logo"
               style={{ width: "32px", height: "32px", borderRadius: "50%" }}
             />
-            <a href="/" className="text-decoration-none text-dark">Smart PNJ</a>
+            <a href="/" className="text-decoration-none text-dark fw-bold">Smart PNJ</a>
           </div>
 
           {/* Kanan: Link + Username + Logout */}

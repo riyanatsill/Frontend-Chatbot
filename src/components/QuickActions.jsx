@@ -4,9 +4,9 @@ import { BsFolder2Open, BsQuestionCircle, BsSearch, BsPeople } from "react-icons
 const QuickActions = ({ onAction }) => {
   const actions = [
     { icon: <BsFolder2Open />, label: "Base Knowledge", action: "base" },
-    { icon: <BsQuestionCircle />, label: "Kelola FAQ", action: "faq" },
-    { icon: <BsSearch />, label: "Pertanyaan User", action: "history" },
-    { icon: <BsPeople />, label: "Kelola Admin", action: "admin" },
+    { icon: <BsQuestionCircle />, label: "FAQ", action: "faq" },
+    { icon: <BsSearch />, label: "History", action: "history" },
+    { icon: <BsPeople />, label: "Manage Admin", action: "admin" },
   ];
 
   return (

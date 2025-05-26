@@ -10,10 +10,23 @@ const MyAccount = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState({ show: false, type: "", message: "" });
   const API_BASE = import.meta.env.VITE_API_URL;
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    fetch(`${API_BASE}/me`, { credentials: "include" })
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    fetch(`${API_BASE}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -22,6 +35,7 @@ const MyAccount = () => {
         setUser({ username: data.username, email: data.email });
       })
       .catch(() => {
+        localStorage.removeItem("token");
         navigate("/login");
       });
   }, []);
@@ -37,36 +51,37 @@ const MyAccount = () => {
     return;
   }
 
+  setLoading(true); // ⏳ mulai loading
+
   fetch(`${API_BASE}/users/reset-password`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
     },
-    credentials: "include",
     body: JSON.stringify({ password: newPassword })
   })
     .then((res) => {
-      if (!res.ok) throw
+      if (!res.ok) throw new Error("Gagal reset password");
       return res.json();
     })
     .then(() => {
       showToast("success", "Password berhasil diperbarui.");
       setNewPassword("");
 
-      
       setTimeout(() => {
-        fetch(`${API_BASE}/logout`, {
-          method: "GET",
-          credentials: "include"
-        }).finally(() => {
-          navigate("/login");
-        });
-      }, 1500);
+        localStorage.removeItem("token");
+        navigate("/login");
+      }, 1200);
     })
     .catch(() => {
       showToast("danger", "Gagal memperbarui password.");
+    })
+    .finally(() => {
+      setLoading(false); // ✅ selesai loading
     });
 };
+
 
 
   return (
@@ -110,8 +125,8 @@ const MyAccount = () => {
             </div>
         </div>
         <div className="text-center">
-            <button className="btn btn-primary" onClick={handlePasswordUpdate}>
-                Update Password
+            <button className="btn btn-primary" onClick={handlePasswordUpdate} disabled={loading}>
+              {loading ? "Updating..." : "Update Password"}
             </button>
         </div>
         {/* TOAST */}

@@ -4,7 +4,6 @@ import NavbarFaq from '../components/NavbarFaq';
 import Footer from '../components/Footer';
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL;
 
 const QuestionHistory = () => {
   const [questions, setQuestions] = useState([]);
@@ -13,73 +12,87 @@ const QuestionHistory = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const limit = 10;
+  const API_BASE = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
+
+  // Cek login saat mount
   useEffect(() => {
-      fetch(`${API_BASE}/me`, { credentials: "include" })
-        .then((res) => {
-          if (!res.ok) throw new Error();
-          return res.json();
-        })
-        .then(() => {
-          // Sudah login, tidak perlu lakukan apa-apa
-        })
-        .catch(() => {
-          // Belum login, redirect ke halaman login
-          navigate("/login");
-        });
-    }, []);
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-  const fetchQuestions = async () => {
-  setLoading(true);
-  try {
-    const categoryParam = filterCategory !== 'Semua' ? `&category=${encodeURIComponent(filterCategory)}` : '';
-    const response = await axios.get(`${API_BASE}/history?page=${page}&limit=${limit}${categoryParam}`);
-    setQuestions(response.data.questions || []);
-    setTotal(response.data.total || 0); // total yang sudah sesuai dengan filter
-  } catch (error) {
-    console.error('Gagal mengambil riwayat pertanyaan:', error);
-  }
-  setLoading(false);
-};
-
-
-  const handleExportExcel = async () => {
-  try {
-    const categoryParam = filterCategory !== 'Semua' ? `?category=${encodeURIComponent(filterCategory)}` : '';
-    const response = await axios.get(`${API_BASE}/export-history-excel${categoryParam}`, {
-      responseType: 'blob',
+    fetch(`${API_BASE}/me`, {
       headers: {
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        Authorization: `Bearer ${token}`
       }
-    });
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        navigate("/login");
+      });
+  }, []);
 
-    // Ambil nama file dari header Content-Disposition
-    const disposition = response.headers['content-disposition'];
-    const match = disposition && disposition.match(/filename="?(.+)"?/);
-    const filename = match ? match[1] : 'chat_history.xlsx';
+  // Ambil pertanyaan berdasarkan filter & halaman
+  const fetchQuestions = async () => {
+    setLoading(true);
+    try {
+      const categoryParam = filterCategory !== 'Semua' ? `&category=${encodeURIComponent(filterCategory)}` : '';
+      const response = await axios.get(`${API_BASE}/history?page=${page}&limit=${limit}${categoryParam}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setQuestions(response.data.questions || []);
+      setTotal(response.data.total || 0);
+    } catch (error) {
+      console.error('Gagal mengambil riwayat pertanyaan:', error);
+    }
+    setLoading(false);
+  };
 
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filename); // ✅ pakai nama dari backend
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } catch (error) {
-    console.error('Gagal mengekspor Excel:', error);
-  }
-};
+  // Export ke Excel
+  const handleExportExcel = async () => {
+    try {
+      const categoryParam = filterCategory !== 'Semua' ? `?category=${encodeURIComponent(filterCategory)}` : '';
+      const response = await axios.get(`${API_BASE}/export-history-excel${categoryParam}`, {
+        responseType: 'blob',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+      });
 
+      const disposition = response.headers['content-disposition'];
+      const match = disposition && disposition.match(/filename="?(.+)"?/);
+      const filename = match ? match[1] : 'chat_history.xlsx';
 
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Gagal mengekspor Excel:', error);
+    }
+  };
 
   const handleCategoryChange = (e) => {
     setFilterCategory(e.target.value);
     setPage(1);
   };
 
+  // Ambil data saat filter/category berubah
   useEffect(() => {
-    fetchQuestions();
+    if (token) fetchQuestions();
   }, [page, filterCategory]);
 
 
@@ -111,7 +124,7 @@ const QuestionHistory = () => {
             </select>
           </div>
           <button onClick={handleExportExcel} className="btn btn-success">
-            Export ke Excel
+            Export Excel
           </button>
         </div>
 

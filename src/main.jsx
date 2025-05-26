@@ -14,7 +14,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import MyAccount from './pages/MyAccount.jsx';
 import MainUser from './pages/Home.jsx';  
 import ManageAdmin from './pages/ManageAdmin.jsx';
-import QaData from './pages/QaData.jsx';
+import QaData from './pages/QAData.jsx';
 
 
 

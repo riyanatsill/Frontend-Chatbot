@@ -16,7 +16,7 @@ const NavbarKnowledge = () => {
               alt="Logo"
               style={{ width: "32px", height: "32px", borderRadius: "50%" }}
             />
-            <span className="fw-bold">Smart PNJ Dashboard</span>
+            <a href="/dashboard" className="fw-bold text-decoration-none text-black">Smart PNJ Dashboard</a>
           </div>
 
           {/* Kanan: Link + Username + Logout */}

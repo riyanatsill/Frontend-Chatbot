@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/smart-pnj.png"; // Ubah sesuai lokasi logo kamu
 
-const NavbarAdmin = () => {
+const NavbarDashboard = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -10,26 +10,32 @@ const NavbarAdmin = () => {
 
   // Ambil user dari session backend
   useEffect(() => {
-    fetch(`${API_BASE}/me`, { credentials: "include" })
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    fetch(`${API_BASE}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
       })
       .then((data) => setUsername(data.username))
-      .catch(() => navigate("/login"));
+      .catch(() => {
+        localStorage.removeItem("token");
+        navigate("/login");
+      });
   }, []);
 
   const handleLogout = () => {
-    fetch(`${API_BASE}/logout`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then(() => {
-        navigate("/login");
-      })
-      .catch((err) => {
-        console.error("Logout gagal:", err);
-      });
+    // JWT logout cukup hapus token lokal
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
@@ -44,7 +50,7 @@ const NavbarAdmin = () => {
               alt="Logo"
               style={{ width: "32px", height: "32px", borderRadius: "50%" }}
             />
-            <span className="fw-bold">Smart PNJ Dashboard</span>
+            <a href="/dashboard" className="fw-bold text-decoration-none text-black">Smart PNJ Dashboard</a>
           </div>
 
           {/* Kanan: Link + Username + Logout */}
@@ -106,4 +112,4 @@ const NavbarAdmin = () => {
   );
 };
 
-export default NavbarAdmin;
+export default NavbarDashboard;

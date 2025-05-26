@@ -13,30 +13,42 @@ const QaData = () => {
   const API_BASE = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
-  useEffect(() => {
-      fetch(`${API_BASE}/me`, { credentials: "include" })
-        .then((res) => {
-          if (!res.ok) throw new Error();
-          return res.json();
-        })
-        .then(() => {
-          // Sudah login, tidak perlu lakukan apa-apa
-        })
-        .catch(() => {
-          // Belum login, redirect ke halaman login
-          navigate("/login");
-        });
-    }, []);
+  const token = localStorage.getItem("token");
 
+  // Cek login saat halaman dibuka
   useEffect(() => {
-    fetchQA();
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    fetch(`${API_BASE}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        navigate("/login");
+      });
+  }, []);
+
+  // Ambil data QA saat `page` berubah
+  useEffect(() => {
+    if (token) fetchQA();
   }, [page]);
 
   const fetchQA = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${API_BASE}/qa-data?page=${page}&limit=${limit}`, {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setQaList(res.data.qa || []);
       setTotal(res.data.total || 0);
@@ -59,6 +71,11 @@ const QaData = () => {
       </section>
 
       <div className="container-xl py-5" style={{ maxWidth: "1000px" }}>
+          <div className="mb-4">
+            <button className="btn btn-primary" onClick={() => navigate("/base-knowledge")}>
+              ← Back
+            </button>
+          </div>
         {loading ? (
           <p className="text-center text-muted">Memuat data QA...</p>
         ) : qaList.length === 0 ? (

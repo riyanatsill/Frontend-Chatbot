@@ -4,28 +4,57 @@ import NavbarFaq from '../components/NavbarFaq';
 import Footer from '../components/Footer';
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL;
+
 
 const FAQ = () => {
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [search, setSearch] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
-
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ id: null, question: '', answer: '', category: '' });
   const [isEdit, setIsEdit] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [faqToDelete, setFaqToDelete] = useState(null);
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
 
 
+
+  // === Validasi Login ===
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    fetch(`${API_BASE}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        navigate("/login");
+      });
+  }, []);
+
+  // === Ambil FAQ ===
   const fetchFaqs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE}/faq`);
+      const response = await axios.get(`${API_BASE}/faq`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setFaqs(response.data);
     } catch (error) {
       console.error('Gagal mengambil FAQ:', error);
@@ -34,23 +63,8 @@ const FAQ = () => {
   };
 
   useEffect(() => {
-    fetch(`${API_BASE}/me`, { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(() => {
-        // Sudah login, tidak perlu lakukan apa-apa
-      })
-      .catch(() => {
-        // Belum login, redirect ke halaman login
-        navigate("/login");
-      });
-  }, []);
-
-  useEffect(() => {
-    fetchFaqs();
-  }, []);
+    if (token) fetchFaqs();
+  }, [token]);
 
   const handleOpenModal = (faq = null) => {
     if (faq) {
@@ -71,63 +85,63 @@ const FAQ = () => {
   };
 
   const showToast = (type, message) => {
-  setToast({ show: true, type, message });
-  setTimeout(() => {
-    setToast(prev => ({ ...prev, show: false }));
-  }, 4000);
-};
+    setToast({ show: true, type, message });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 4000);
+  };
 
   const handleSubmit = async () => {
-  const { question, answer, category } = formData;
+    const { question, answer, category } = formData;
 
-  // Validasi
-  if (!question.trim()) {
-    showToast("danger", "Pertanyaan tidak boleh kosong.");
-    return;
-  }
-
-  if (!answer.trim()) {
-    showToast("danger", "Jawaban tidak boleh kosong.");
-    return;
-  }
-
-  if (!category.trim()) {
-    showToast("danger", "Kategori harus dipilih.");
-    return;
-  }
-
-  try {
-    if (isEdit) {
-      await axios.put(`${API_BASE}/faq/${formData.id}`, formData);
-    } else {
-      await axios.post(`${API_BASE}/faq`, formData);
+    if (!question.trim() || !answer.trim() || !category.trim()) {
+      showToast("danger", "Semua field harus diisi.");
+      return;
     }
-    await fetchFaqs();
-    handleCloseModal();
-    showToast("success", "FAQ berhasil disimpan.");
-  } catch (error) {
-    console.error("Gagal simpan FAQ:", error);
-    showToast("danger", "Gagal menyimpan FAQ.");
-  }
-};
 
-const confirmDelete = (faqId) => {
-  setFaqToDelete(faqId);
-  setShowDeleteModal(true);
-};
+    setSubmitting(true);
 
-const executeDelete = async () => {
-  try {
-    await axios.delete(`${API_BASE}/faq/${faqToDelete}`);
-    await fetchFaqs();
-  } catch (error) {
-    console.error('Gagal hapus FAQ:', error);
-  } finally {
-    setShowDeleteModal(false);
-    setFaqToDelete(null);
-  }
-};
+    try {
+      if (isEdit) {
+        await axios.put(`${API_BASE}/faq/${formData.id}`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } else {
+        await axios.post(`${API_BASE}/faq`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+      await fetchFaqs();
+      handleCloseModal();
+      showToast("success", "FAQ berhasil disimpan.");
+    } catch (error) {
+      console.error("Gagal simpan FAQ:", error);
+      showToast("danger", "Gagal menyimpan FAQ.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
+  const confirmDelete = (faqId) => {
+    setFaqToDelete(faqId);
+    setShowDeleteModal(true);
+  };
+
+  const executeDelete = async () => {
+    setSubmitting(true);
+    try {
+      await axios.delete(`${API_BASE}/faq/${faqToDelete}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      await fetchFaqs();
+    } catch (error) {
+      console.error('Gagal hapus FAQ:', error);
+    } finally {
+      setSubmitting(false);
+      setShowDeleteModal(false);
+      setFaqToDelete(null);
+    }
+  };
 
   const filteredFaqs = faqs
     .filter(faq =>
@@ -146,8 +160,8 @@ const executeDelete = async () => {
         <div className="container py-5 flex-grow-1" style={{ maxWidth: "900px" }}>
           <div className="row align-items-center justify-content-between g-3 mb-4">
             <div className="col-12 col-md-auto">
-              <button className="btn btn-success w-100" onClick={() => handleOpenModal()}>
-                + Tambah FAQ Manual
+              <button className="btn btn-primary w-100" onClick={() => handleOpenModal()}>
+                + Tambah FAQ
               </button>
             </div>
             <div className="col-12 col-md d-flex flex-column flex-md-row gap-2">
@@ -285,7 +299,7 @@ const executeDelete = async () => {
                     <button className="btn btn-secondary" onClick={handleCloseModal}>
                       Batal
                     </button>
-                    <button className="btn btn-primary" onClick={handleSubmit}>
+                    <button className="btn btn-primary" onClick={handleSubmit} disabled={submitting}>
                       Simpan
                     </button>
                   </div>
@@ -319,7 +333,7 @@ const executeDelete = async () => {
                     >
                       Batal
                     </button>
-                    <button className="btn btn-danger" onClick={executeDelete}>
+                    <button className="btn btn-danger" onClick={executeDelete} disabled={submitting}>
                       Hapus
                     </button>
                   </div>

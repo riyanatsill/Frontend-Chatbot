@@ -11,23 +11,36 @@ const BaseKnowledge = () => {
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
   const API_BASE = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
 
   const fetchFiles = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/uploaded-files`);
+      const res = await axios.get(`${API_BASE}/uploaded-files`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setFiles(res.data.files);
     } catch (err) {
       console.error('Gagal mengambil daftar file:', err);
     }
   };
 
+    // Cek login user
   useEffect(() => {
-    fetchFiles();
-  }, []);
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
 
-  useEffect(() => {
-    fetch(`${API_BASE}/me`, { credentials: "include" })
+    fetch(`${API_BASE}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -36,10 +49,18 @@ const BaseKnowledge = () => {
         setUser({ username: data.username });
       })
       .catch(() => {
+        localStorage.removeItem("token");
         window.location.href = "/login";
       });
   }, []);
 
+  useEffect(() => {
+    if (token) {
+      fetchFiles();
+    }
+  }, [token]);
+
+  // Upload file
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!uploadFile) return;
@@ -50,7 +71,9 @@ const BaseKnowledge = () => {
 
     try {
       const res = await axios.post(`${API_BASE}/upload`, formData, {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       showToast("success", res.data.message);
       setUploadFile(null);
@@ -59,14 +82,21 @@ const BaseKnowledge = () => {
       console.error('Gagal upload file:', err);
       showToast("danger", "Gagal upload file.");
     }
+
     setLoading(false);
   };
 
+  // Hapus file
   const handleDelete = async () => {
     if (!fileToDelete) return;
+    setDeleting(true);
 
     try {
-      const res = await axios.delete(`${API_BASE}/delete-file/${encodeURIComponent(fileToDelete)}`);
+      const res = await axios.delete(`${API_BASE}/delete-file/${encodeURIComponent(fileToDelete)}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       showToast("success", res.data.message);
       fetchFiles();
     } catch (err) {
@@ -76,7 +106,9 @@ const BaseKnowledge = () => {
 
     setShowDeleteModal(false);
     setFileToDelete(null);
+    setDeleting(false);
   };
+
 
   const showToast = (type, message) => {
     setToast({ show: true, type, message });
@@ -212,8 +244,9 @@ const BaseKnowledge = () => {
                     type="button"
                     className="btn btn-danger"
                     onClick={handleDelete}
+                    disabled={deleting}
                   >
-                    Hapus
+                    {deleting ? "Menghapus..." : "Hapus"}
                   </button>
                 </div>
               </div>

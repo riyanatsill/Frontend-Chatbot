@@ -1,7 +1,6 @@
 import NavbarUser from "../components/NavbarUser";
 import Footer2 from "../components/Footer2";
 import { useEffect, useState } from "react";
-import logo from "../assets/smart-pnj.png"; // Ubah sesuai lokasi logo kamu
 import logo2 from "../assets/logo.png"; // Ubah sesuai lokasi logo kamu
 
 
@@ -79,7 +78,7 @@ const MainUser = () => {
                 <p className="text-center text-muted">Belum ada FAQ yang tersedia.</p>
                 ) : (
                 <div className="accordion" id="faqAccordion" style={{ marginTop: '150px' }}>
-                    {faqs.map((faq, index) => (
+                    {faqs.slice(0, 5).map((faq, index) => (
                     <div className="accordion-item" key={faq.id}>
                         <h2 className="accordion-header" id={`heading${faq.id}`}>
                         <button

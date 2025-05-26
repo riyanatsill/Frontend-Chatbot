@@ -8,16 +8,8 @@ const NavbarAccount = () => {
   const API_BASE = import.meta.env.VITE_API_URL;
 
   const handleLogout = () => {
-    fetch(`${API_BASE}/logout`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then(() => {
-        navigate("/login");
-      })
-      .catch((err) => {
-        console.error("Logout gagal:", err);
-      });
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
@@ -32,7 +24,7 @@ const NavbarAccount = () => {
               alt="Logo"
               style={{ width: "32px", height: "32px", borderRadius: "50%" }}
             />
-            <span className="fw-bold">Smart PNJ Dashboard</span>
+            <a href="/dashboard" className="fw-bold text-decoration-none text-black">Smart PNJ Dashboard</a>
           </div>
 
           {/* Kanan: Link + Username + Logout */}

@@ -11,6 +11,9 @@ const ManageAdmin = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAdminId, setSelectedAdminId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUserBlocked, setCurrentUserBlocked] = useState(false);
+
   const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_URL;
 
@@ -20,28 +23,47 @@ const ManageAdmin = () => {
     password: ''
   });
 
+  const token = localStorage.getItem("token");
+  
+
   const isValidEmail = (email) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return pattern.test(email);
   };
 
+  // Cek login user
   useEffect(() => {
-      fetch(`${API_BASE}/me`, { credentials: "include" })
-        .then((res) => {
-          if (!res.ok) throw new Error();
-          return res.json();
-        })
-        .then(() => {
-          // Sudah login, tidak perlu lakukan apa-apa
-        })
-        .catch(() => {
-          // Belum login, redirect ke halaman login
-          navigate("/login");
-        });
-    }, []);
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
+    fetch(`${API_BASE}/me`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then((data) => {
+      setCurrentUserId(data.id);
+      setCurrentUserBlocked(data.is_blocked);
+    })
+    .catch(() => {
+      localStorage.removeItem("token");
+      navigate("/login");
+    });
+}, []);
+
+  // Ambil daftar admin
   useEffect(() => {
-    fetch(`${API_BASE}/users`)
+    if (!token) return;
+
+    fetch(`${API_BASE}/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => res.json())
       .then((data) => {
         setAdmins(data);
@@ -51,10 +73,14 @@ const ManageAdmin = () => {
         console.error("Gagal mengambil data admin:", err);
         setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   const refreshData = () => {
-    fetch(`${API_BASE}/users`)
+    fetch(`${API_BASE}/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => res.json())
       .then((data) => setAdmins(data));
   };
@@ -79,7 +105,10 @@ const ManageAdmin = () => {
 
     fetch(`${API_BASE}/users`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify(newAdmin)
     })
       .then((res) => {
@@ -95,7 +124,12 @@ const ManageAdmin = () => {
   };
 
   const handleDelete = (id) => {
-    fetch(`${API_BASE}/users/${id}`, { method: "DELETE" })
+    fetch(`${API_BASE}/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -177,7 +211,7 @@ const ManageAdmin = () => {
             </div>
             </div>
             <div className="col-md-1">
-              <button className="btn btn-dark w-100" onClick={handleCreate}>
+              <button className="btn btn-primary w-100" onClick={handleCreate} disabled={loading}>
                 Create
               </button>
             </div>
@@ -198,6 +232,7 @@ const ManageAdmin = () => {
                   <th>Username</th>
                   <th>Email</th>
                   <th>Dibuat</th>
+                  <th>Status</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
@@ -216,15 +251,24 @@ const ManageAdmin = () => {
                         })}
                     </td>
                     <td>
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => {
-                          setSelectedAdminId(admin.id);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        Delete
-                      </button>
+                      {admin.is_blocked ? (
+                        <span className="badge bg-danger">Terblokir</span>
+                      ) : (
+                        <span className="badge bg-success">Aktif</span>
+                      )}
+                    </td>
+                    <td>
+                      {admin.id !== currentUserId && (
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => {
+                            setSelectedAdminId(admin.id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -263,7 +307,7 @@ const ManageAdmin = () => {
                       onClick={() => {
                         setShowDeleteModal(false);
                         if (selectedAdminId) handleDelete(selectedAdminId);
-                      }}
+                      }} disabled={loading}
                     >
                       Hapus
                     </button>
